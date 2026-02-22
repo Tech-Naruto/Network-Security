@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from typing import List
 import pymongo
+
 from sklearn.model_selection import train_test_split
 
 from src.exception.exception import NetworkSecurityException
@@ -81,7 +82,6 @@ class DataIngestion:
             self.split_data_as_train_test(df=df)
 
             data_ingestion_artifact = DataIngestionArtifact(
-                feature_store_file_path=self.data_ingestion_config.feature_store_file_path,
                 train_file_path=self.data_ingestion_config.train_file_path,
                 test_file_path=self.data_ingestion_config.test_file_path
             )
