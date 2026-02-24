@@ -5,8 +5,10 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.metrics import accuracy_score
 import mlflow
+import dagshub
 
-mlflow.set_tracking_uri("sqlite:///mlflow.db")
+dagshub.init(repo_owner='Tech-Naruto', repo_name='Network-Security', mlflow=True)
+
 mlflow.set_experiment("Network_Security_Project")
 
 from src.exception.exception import NetworkSecurityException
@@ -109,6 +111,12 @@ class ModelTrainer:
         
         logging.info("Saving Network Model")
         save_object(file_path=self.model_trainer_config.trained_model_file_path, obj=network_model)
+
+        # Saving final models
+        logging.info("Saving final models")
+        os.makedirs("./final_models", exist_ok=True)
+        save_object(file_path="./final_models/model.pkl", obj=best_model)
+        save_object(file_path="./final_models/preprocessor.pkl", obj=preprocessor)
 
         model_trainer_artifact = ModelTrainerArtifact(
             trained_model_file_path=self.model_trainer_config.trained_model_file_path,
