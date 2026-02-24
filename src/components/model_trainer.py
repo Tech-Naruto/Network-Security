@@ -4,6 +4,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.metrics import accuracy_score
+import mlflow
+
+mlflow.set_tracking_uri("sqlite:///mlflow.db")
+mlflow.set_experiment("Network_Security_Project")
 
 from src.exception.exception import NetworkSecurityException
 from src.logging.logger import logging
@@ -21,6 +25,18 @@ class ModelTrainer:
             self.data_transformation_artifact = data_transformation_artifact
         except Exception as e:
             raise NetworkSecurityException(e, sys)
+
+    def track_mlflow(self, best_model, classification_metric, run_name):
+        with mlflow.start_run(run_name=run_name):
+            f1_score = classification_metric.f1_score
+            precision_score = classification_metric.precision_score
+            recall_score = classification_metric.recall_score
+
+            mlflow.log_metric("f1_score", f1_score)
+            mlflow.log_metric("precision_score", precision_score)
+            mlflow.log_metric("recall_score", recall_score)
+
+            mlflow.sklearn.log_model(best_model, "model")
 
     def train_model(self, x_train, y_train, x_test, y_test):
         models = {
@@ -75,10 +91,14 @@ class ModelTrainer:
         y_train_pred = best_model.predict(x_train)
         train_classification_metric = get_classification_score(y_true=y_train, y_pred=y_train_pred)
 
-        ## >>> Track the mlflow <<<
+        # >>> Track the mlflow <<<
+        self.track_mlflow(best_model, train_classification_metric, "train-run")
 
         y_test_pred = best_model.predict(x_test)
         test_classification_metric = get_classification_score(y_true=y_test, y_pred=y_test_pred)
+
+        # >>> Track the mlflow <<<
+        self.track_mlflow(best_model, test_classification_metric, "test-run")
 
         logging.info("Loading preprocessor object")
         preprocessor = load_object(file_path = self.data_transformation_artifact.transformed_object_file_path)

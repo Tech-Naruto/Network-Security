@@ -6,4 +6,5 @@ certifi
 scikit-learn
 scipy
 pyaml
+mlflow
 # -e .
