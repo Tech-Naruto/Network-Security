@@ -112,7 +112,7 @@ class ModelTrainer:
         logging.info("Saving Network Model")
         save_object(file_path=self.model_trainer_config.trained_model_file_path, obj=network_model)
 
-        # Saving final models
+        # >>> Saving final models <<< 
         logging.info("Saving final models")
         os.makedirs("./final_models", exist_ok=True)
         save_object(file_path="./final_models/model.pkl", obj=best_model)
