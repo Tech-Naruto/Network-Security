@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import KNNImputer
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
 
 from src.constants.training_pipeline import TARGET_COLUMN, DATA_TRANSFORMATION_IMPUTER_PARAMS
 from src.exception.exception import NetworkSecurityException
@@ -28,11 +29,22 @@ class DataTransformation:
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
+    @staticmethod
+    def remove_id_column(df: pd.DataFrame) -> pd.DataFrame:
+        try:
+            if "id" in df.columns:
+                df = df.drop(columns=["id"])
+            return df
+        except Exception as e:
+            raise NetworkSecurityException(e, sys)
+
     def get_data_transformer_object(cls) -> Pipeline:
         try:
+            remove_id = FunctionTransformer(func=cls.remove_id_column, validate=False)
+
             imputer = KNNImputer(**DATA_TRANSFORMATION_IMPUTER_PARAMS)
             
-            processor = Pipeline([("imputer", imputer)])
+            processor = Pipeline([("remove_id", remove_id),("imputer", imputer)])
             return processor
         except Exception as e:
             raise NetworkSecurityException(e, sys)

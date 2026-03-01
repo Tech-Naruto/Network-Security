@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
+import uvicorn
 
 from src.exception.exception import NetworkSecurityException
 from src.logging.logger import logging
@@ -75,3 +76,8 @@ async def predict_route(request: Request, file: UploadFile = File(...)):
         return templates.TemplateResponse("table.html", {"request": request, "table": table_html})
     except Exception as e:
         raise NetworkSecurityException(e, sys)
+
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=5050)
