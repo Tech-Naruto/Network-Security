@@ -8,4 +8,6 @@ scipy
 pyaml
 mlflow
 dagshub
-# -e .
+fastapi[standard]
+uvicorn
+-e .

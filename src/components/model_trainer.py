@@ -6,10 +6,16 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier,
 from sklearn.metrics import accuracy_score
 import mlflow
 import dagshub
+from dotenv import load_dotenv
+load_dotenv()
 
-dagshub.init(repo_owner='Tech-Naruto', repo_name='Network-Security', mlflow=True)
+DAGSHUB_REPO_OWNER=os.getenv("DAGSHUB_REPO_OWNER")
+DAGSHUB_REPO_NAME=os.getenv("DAGSHUB_REPO_NAME")
+DAGSHUB_REPO_EXP_NAME=os.getenv("DAGSHUB_REPO_EXP_NAME")
 
-mlflow.set_experiment("Network_Security_Project")
+dagshub.init(repo_owner=DAGSHUB_REPO_OWNER, repo_name=DAGSHUB_REPO_NAME, mlflow=True)
+
+mlflow.set_experiment(DAGSHUB_REPO_EXP_NAME)
 
 from src.exception.exception import NetworkSecurityException
 from src.logging.logger import logging
